@@ -10,51 +10,93 @@
     <script src="../node_modules/three/examples/js/libs/stats.min.js"></script>
 
     <script src="../lib/dice.js"></script>
+    <style>
+        .d4{background: #ff00ff;}
+        .d6{background: #00ffff;}
+        .d8{background: #00ff00;}
+        .d10{background: #ffff00;}
+        .d12{background: #ff8000;}
+        .d20{background: #ff0000;}
+        .d4,.d6,.d8,.d10,.d12,.d20{
+            height: 50px;
+            width: 50px;
+        }
+        th,td{
+            text-align: center;
+            font-weight: bold;
+        }
+        .bigbutton{
+            display: block;
+            height: 100px;
+            width: 100px;
+        }
+    </style>
 </head>
 <body ng-app="myApp">
     <div ng-controller="MainController">
         <table border>
             <tr>
-                <th colspan=3>d4</th>
-                <th colspan=3>d6</th>
-                <th colspan=3>d8</th>
-                <th colspan=3>d10</th>
-                <th colspan=3>d12</th>
-                <th colspan=3>d20</th>
+                <th rowspan=2>Dice</th>
+                <th colspan=3 class="d4">d4</th>
+                <th colspan=3 class="d6">d6</th>
+                <th colspan=3 class="d8">d8</th>
+                <th colspan=3 class="d10">d10</th>
+                <th colspan=3 class="d12">d12</th>
+                <th colspan=3 class="d20">d20</th>
+                <th rowspan=4>
+                    <button ng-click="removeAllDice()" class="bigbutton">Clear</button>
+                    <button ng-click="randomDiceThrow()" class="bigbutton">Roll</button>
+                </th>
             </tr>
             <tr>
-                <td><button>-</button></td>
-                <td><span>0</span></td>
-                <td><button>+</button></td>
-                <td><button>-</button></td>
-                <td><span>0</span></td>
-                <td><button>+</button></td>
-                <td><button>-</button></td>
-                <td><span>0</span></td>
-                <td><button>+</button></td>
-                <td><button>-</button></td>
-                <td><span>0</span></td>
-                <td><button>+</button></td>
-                <td><button>-</button></td>
-                <td><span>0</span></td>
-                <td><button>+</button></td>
-                <td><button>-</button></td>
-                <td><span>0</span></td>
-                <td><button>+</button></td>
+                <td><button ng-click="removeDie(4)">-</button></td>
+                <td><span>{{dicestats.d4.count}}</span></td>
+                <td><button ng-click="addDie(DiceD4,'#ff00ff')">+</button></td>
+                <td><button ng-click="removeDie(6)">-</button></td>
+                <td><span>{{dicestats.d6.count}}</span></td>
+                <td><button ng-click="addDie(DiceD6,'#00ffff')">+</button></td>
+                <td><button ng-click="removeDie(8)">-</button></td>
+                <td><span>{{dicestats.d8.count}}</span></td>
+                <td><button ng-click="addDie(DiceD8,'#00ff00')">+</button></td>
+                <td><button ng-click="removeDie(10)">-</button></td>
+                <td><span>{{dicestats.d10.count}}</span></td>
+                <td><button ng-click="addDie(DiceD10,'#ffff00')">+</button></td>
+                <td><button ng-click="removeDie(12)">-</button></td>
+                <td><span>{{dicestats.d12.count}}</span></td>
+                <td><button ng-click="addDie(DiceD12,'#ff8000')">+</button></td>
+                <td><button ng-click="removeDie(20)">-</button></td>
+                <td><span>{{dicestats.d20.count}}</span></td>
+                <td><button ng-click="addDie(DiceD20,'#ff0000')">+</button></td>
+
             </tr>
             <tr>
-                <td colspan=3><span>0</span></td>
-                <td colspan=3><span>0</span></td>
-                <td colspan=3><span>0</span></td>
-                <td colspan=3><span>0</span></td>
-                <td colspan=3><span>0</span></td>
-                <td colspan=3><span>0</span></td>
+                <td>Values</td>
+                <td colspan=3 class="d4"><div ng-repeat="die in dicestats.d4.list">{{die.getUpsideValue()}}</div></td>
+                <td colspan=3 class="d6"><div ng-repeat="die in dicestats.d6.list">{{die.getUpsideValue()}}</div></td>
+                <td colspan=3 class="d8"><div ng-repeat="die in dicestats.d8.list">{{die.getUpsideValue()}}</div></td>
+                <td colspan=3 class="d10"><div ng-repeat="die in dicestats.d10.list">{{die.getUpsideValue()}}</div></td>
+                <td colspan=3 class="d12"><div ng-repeat="die in dicestats.d12.list">{{die.getUpsideValue()}}</div></td>
+                <td colspan=3 class="d20"><div ng-repeat="die in dicestats.d20.list">{{die.getUpsideValue()}}</div></td>
+            </tr>
+            <tr>
+                <td>Total</td>
+                <td colspan=3 class="d4"><div>{{total(4)}}</div></td>
+                <td colspan=3 class="d6"><div>{{total(6)}}</div></td>
+                <td colspan=3 class="d8"><div>{{total(8)}}</div></td>
+                <td colspan=3 class="d10"><div>{{total(10)}}</div></td>
+                <td colspan=3 class="d12"><div>{{total(12)}}</div></td>
+                <td colspan=3 class="d20"><div>{{total(20)}}</div></td>
+            </tr>
+            <tr>
+                <td>
+                    Grand
+                    <br>
+                    Total
+                </td>
+                <td colspan=18><div>{{grandTotal()}}</div></td>
+                <td><button onclick="controls.reset()">Reset View</button></td>
             </tr>
         </table>
-        <div style="position: fixed; right: 0">
-            <button ng-click="randomDiceThrow()">Roll</button>
-            <button onclick="controls.reset()">Reset</button>
-            </div>
         <div id="ThreeJS" style="position: absolute; right:0px; bottom:0px"></div>
     </div>
 <script>
@@ -63,13 +105,21 @@ var container, scene, camera, renderer, controls, stats, world, dice = [];
 
 var app = angular.module("myApp", []);
 app.controller('MainController', ['$scope', function($scope) {
+    $scope.dicestats = {
+        d4: {count: 0,total: 0, list: []},
+        d6: {count: 0,total: 0, list: []},
+        d8: {count: 0,total: 0, list: []},
+        d10: {count: 0,total: 0, list: []},
+        d12: {count: 0,total: 0, list: []},
+        d20: {count: 0,total: 0, list: []}
+    }
     // FUNCTIONS
     $scope.init = function ()
     {
         // SCENE
         scene = new THREE.Scene();
         // CAMERA
-        var SCREEN_WIDTH = window.innerWidth/2, SCREEN_HEIGHT = window.innerHeight/2;
+        var SCREEN_WIDTH = window.innerWidth/4*3, SCREEN_HEIGHT = window.innerHeight/4*3;
         var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.01, FAR = 20000;
         camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
         scene.add(camera);
@@ -130,40 +180,69 @@ app.controller('MainController', ['$scope', function($scope) {
         var northwallShape = new CANNON.Box(new CANNON.Vec3(15,15,1));
         var northwallBody = new CANNON.Body({ mass: 0 });
         northwallBody.addShape(northwallShape);
-        northwallBody.position.set(0,0,-15);
+        northwallBody.position.set(0,7.5,-15);
         world.addBody(northwallBody);
 
         var eastwallShape = new CANNON.Box(new CANNON.Vec3(1,15,15));
         var eastwallBody = new CANNON.Body({ mass: 0 });
         eastwallBody.addShape(eastwallShape);
-        eastwallBody.position.set(15,0,0);
+        eastwallBody.position.set(15,7.5,0);
         world.addBody(eastwallBody);
 
         var southwallShape = new CANNON.Box(new CANNON.Vec3(15,15,1));
         var southwallBody = new CANNON.Body({ mass: 0 });
         southwallBody.addShape(southwallShape);
-        southwallBody.position.set(0,0,15);
+        southwallBody.position.set(0,7.5,15);
         world.addBody(southwallBody);
 
         var westwallShape = new CANNON.Box(new CANNON.Vec3(1,15,15));
         var westwallBody = new CANNON.Body({ mass: 0 });
         westwallBody.addShape(westwallShape);
-        westwallBody.position.set(-15,0,0);
+        westwallBody.position.set(-15,7.5,0);
         world.addBody(westwallBody);
 
         requestAnimationFrame( animate );
 
-        function addDie(_class,_color){
+        $scope.DiceD4 = DiceD4;
+        $scope.DiceD6 = DiceD6;
+        $scope.DiceD8 = DiceD8;
+        $scope.DiceD10 = DiceD10;
+        $scope.DiceD12 = DiceD12;
+        $scope.DiceD20 = DiceD20;
+        $scope.addDie = function(_class,_color){
             var die = new _class({size: 1.5, backColor: _color});
             scene.add(die.getObject());
             dice.push(die);
+            $scope.dicestats["d"+die.values].count++;
+            $scope.dicestats["d"+die.values].list.push(die);
         }
-        addDie(DiceD4,"#ff00ff");
-        addDie(DiceD6,"#00ffff");
-        addDie(DiceD8,"#00ff00");
-        addDie(DiceD10,"#ffff00");
-        addDie(DiceD12,"#ff8000");
-        addDie(DiceD20,"#ff0000");
+        $scope.addDie(DiceD4,"#ff00ff");
+        $scope.addDie(DiceD6,"#00ffff");
+        $scope.addDie(DiceD8,"#00ff00");
+        $scope.addDie(DiceD10,"#ffff00");
+        $scope.addDie(DiceD12,"#ff8000");
+        $scope.addDie(DiceD20,"#ff0000");
+
+        $scope.removeDie = function(_d){
+            var die = dice.find(x => x.values == _d);
+            if(die){
+                scene.remove(die.getObject());
+                dice = dice.filter(x => x != die);
+                $scope.dicestats["d"+die.values].count--;
+                $scope.dicestats["d"+die.values].list = $scope.dicestats["d"+die.values].list.slice(1);
+                $scope.$digest();
+            }
+        }
+        $scope.removeAllDice = function(){
+            dice.forEach(die => {
+                scene.remove(die.getObject());
+                dice = dice.filter(x => x != die);
+                $scope.dicestats["d"+die.values].count--;
+                $scope.dicestats["d"+die.values].list = [];
+                $scope.dicestats["d"+die.values].total = 0;
+            });
+            $scope.$digest();
+        }
     }
     $scope.init();
 
@@ -171,6 +250,18 @@ app.controller('MainController', ['$scope', function($scope) {
         var mult = b - a + 1;
         var min = a - 1
         return Math.ceil(Math.random()*mult+min);
+    }
+
+    $scope.total = function(_d){
+        var theseDice = dice.filter(x=>x.values == _d)
+        if(theseDice.length != 0){
+            return theseDice.map(x => x.getUpsideValue()).reduce((x,y) => x + y);
+        }
+    }
+    $scope.grandTotal = function(){
+        if(dice.length != 0){
+            return dice.map(x => x.getUpsideValue()).reduce((x,y) => x + y);
+        }
     }
 
     $scope.randomDiceThrow = function() {
@@ -198,6 +289,7 @@ app.controller('MainController', ['$scope', function($scope) {
         controls.update();
         stats.update();
         requestAnimationFrame( animate );
+        $scope.$digest();
     }
 }]);
 </script>
