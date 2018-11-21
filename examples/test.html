@@ -17,24 +17,33 @@
         .d10{background: #ffff00;}
         .d12{background: #ff8000;}
         .d20{background: #ff0000;}
-        .d4,.d6,.d8,.d10,.d12,.d20{
-            height: 50px;
-            width: 50px;
-        }
         th,td{
             text-align: center;
             font-weight: bold;
+            min-width: 10px;
+            border: 1px solid black;
         }
-        .bigbutton{
-            display: block;
-            height: 100px;
-            width: 100px;
+        .sub,.add,.bigbutton{
+            cursor: pointer;
+            border: 3px outset;
+        }
+        .sub:active,.add:active,.bigbutton:active{
+            cursor: pointer;
+            border: 3px inset;
+        }
+        .fail{
+            background: black;
+            color: #ff0000;
+        }
+        .crit{
+            background: black;
+            color: #00ff00
         }
     </style>
 </head>
 <body ng-app="myApp">
     <div ng-controller="MainController">
-        <table border>
+        <table cellspacing=1>
             <tr>
                 <th rowspan=2>Dice</th>
                 <th colspan=3 class="d4">d4</th>
@@ -43,61 +52,52 @@
                 <th colspan=3 class="d10">d10</th>
                 <th colspan=3 class="d12">d12</th>
                 <th colspan=3 class="d20">d20</th>
-                <th rowspan=4>
-                    <button ng-click="removeAllDice()" class="bigbutton">Clear</button>
-                    <button ng-click="randomDiceThrow()" class="bigbutton">Roll</button>
-                </th>
+                <th rowspan=2 ng-click="removeAllDice()" class="bigbutton">Clear</th>
+                <th rowspan=4 ng-click="randomDiceThrow()" class="bigbutton">Roll</th>
             </tr>
             <tr>
-                <td><button ng-click="removeDie(4)">-</button></td>
-                <td><span>{{dicestats.d4.count}}</span></td>
-                <td><button ng-click="addDie(DiceD4,'#ff00ff')">+</button></td>
-                <td><button ng-click="removeDie(6)">-</button></td>
-                <td><span>{{dicestats.d6.count}}</span></td>
-                <td><button ng-click="addDie(DiceD6,'#00ffff')">+</button></td>
-                <td><button ng-click="removeDie(8)">-</button></td>
-                <td><span>{{dicestats.d8.count}}</span></td>
-                <td><button ng-click="addDie(DiceD8,'#00ff00')">+</button></td>
-                <td><button ng-click="removeDie(10)">-</button></td>
-                <td><span>{{dicestats.d10.count}}</span></td>
-                <td><button ng-click="addDie(DiceD10,'#ffff00')">+</button></td>
-                <td><button ng-click="removeDie(12)">-</button></td>
-                <td><span>{{dicestats.d12.count}}</span></td>
-                <td><button ng-click="addDie(DiceD12,'#ff8000')">+</button></td>
-                <td><button ng-click="removeDie(20)">-</button></td>
-                <td><span>{{dicestats.d20.count}}</span></td>
-                <td><button ng-click="addDie(DiceD20,'#ff0000')">+</button></td>
+                <td class="d4 sub" ng-click="removeDie(4)">-</td>
+                <td class="d4"><span>{{dicestats.d4.count}}</span></td>
+                <td class="d4 add" ng-click="addDie(DiceD4,'#ff00ff')">+</td>
+                <td class="d6 sub" ng-click="removeDie(6)">-</td>
+                <td class="d6"><span>{{dicestats.d6.count}}</span></td>
+                <td class="d6 add" ng-click="addDie(DiceD6,'#00ffff')">+</td>
+                <td class="d8 sub" ng-click="removeDie(8)">-</td>
+                <td class="d8"><span>{{dicestats.d8.count}}</span></td>
+                <td class="d8 add" ng-click="addDie(DiceD8,'#00ff00')">+</td>
+                <td class="d10 sub" ng-click="removeDie(10)">-</td>
+                <td class="d10"><span>{{dicestats.d10.count}}</span></td>
+                <td class="d10 add" ng-click="addDie(DiceD10,'#ffff00')">+</td>
+                <td class="d12 sub" ng-click="removeDie(12)">-</td>
+                <td class="d12"><span>{{dicestats.d12.count}}</span></td>
+                <td class="d12 add" ng-click="addDie(DiceD12,'#ff8000')">+</td>
+                <td class="d20 sub" ng-click="removeDie(20)">-</td>
+                <td class="d20"><span>{{dicestats.d20.count}}</span></td>
+                <td class="d20 add" ng-click="addDie(DiceD20,'#ff0000')">+</td>
 
             </tr>
             <tr>
                 <td>Values</td>
-                <td colspan=3 class="d4"><div ng-repeat="die in dicestats.d4.list">{{die.getUpsideValue()}}</div></td>
-                <td colspan=3 class="d6"><div ng-repeat="die in dicestats.d6.list">{{die.getUpsideValue()}}</div></td>
-                <td colspan=3 class="d8"><div ng-repeat="die in dicestats.d8.list">{{die.getUpsideValue()}}</div></td>
-                <td colspan=3 class="d10"><div ng-repeat="die in dicestats.d10.list">{{die.getUpsideValue()}}</div></td>
-                <td colspan=3 class="d12"><div ng-repeat="die in dicestats.d12.list">{{die.getUpsideValue()}}</div></td>
-                <td colspan=3 class="d20"><div ng-repeat="die in dicestats.d20.list">{{die.getUpsideValue()}}</div></td>
+                <td colspan=3 class="d4"><div ng-repeat="die in dicestats.d4.list" class="{{result(die)}}">{{die.getUpsideValue()}}</div></td>
+                <td colspan=3 class="d6"><div ng-repeat="die in dicestats.d6.list" class="{{result(die)}}">{{die.getUpsideValue()}}</div></td>
+                <td colspan=3 class="d8"><div ng-repeat="die in dicestats.d8.list" class="{{result(die)}}">{{die.getUpsideValue()}}</div></td>
+                <td colspan=3 class="d10"><div ng-repeat="die in dicestats.d10.list" class="{{result(die)}}">{{die.getUpsideValue()}}</div></td>
+                <td colspan=3 class="d12"><div ng-repeat="die in dicestats.d12.list" class="{{result(die)}}">{{die.getUpsideValue()}}</div></td>
+                <td colspan=3 class="d20"><div ng-repeat="die in dicestats.d20.list" class="{{result(die)}}">{{die.getUpsideValue()}}</div></td>
+                <td>Total</td>
             </tr>
             <tr>
-                <td>Total</td>
+                <td>Sum</td>
                 <td colspan=3 class="d4"><div>{{total(4)}}</div></td>
                 <td colspan=3 class="d6"><div>{{total(6)}}</div></td>
                 <td colspan=3 class="d8"><div>{{total(8)}}</div></td>
                 <td colspan=3 class="d10"><div>{{total(10)}}</div></td>
                 <td colspan=3 class="d12"><div>{{total(12)}}</div></td>
                 <td colspan=3 class="d20"><div>{{total(20)}}</div></td>
-            </tr>
-            <tr>
-                <td>
-                    Grand
-                    <br>
-                    Total
-                </td>
-                <td colspan=18><div>{{grandTotal()}}</div></td>
-                <td><button onclick="controls.reset()">Reset View</button></td>
+                <td><div>{{grandTotal()}}</div></td>
             </tr>
         </table>
-        <div id="ThreeJS" style="position: absolute; right:0px; bottom:0px"></div>
+        <div id="ThreeJS" style="position: absolute; right:0px; bottom:0px" ondblclick="controls.reset()"></div>
     </div>
 <script>
 // standard global variables
@@ -119,7 +119,7 @@ app.controller('MainController', ['$scope', function($scope) {
         // SCENE
         scene = new THREE.Scene();
         // CAMERA
-        var SCREEN_WIDTH = window.innerWidth/4*3, SCREEN_HEIGHT = window.innerHeight/4*3;
+        var SCREEN_WIDTH = window.innerWidth/2, SCREEN_HEIGHT = window.innerHeight;
         var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.01, FAR = 20000;
         camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
         scene.add(camera);
@@ -261,6 +261,18 @@ app.controller('MainController', ['$scope', function($scope) {
     $scope.grandTotal = function(){
         if(dice.length != 0){
             return dice.map(x => x.getUpsideValue()).reduce((x,y) => x + y);
+        }
+    }
+
+    $scope.result = function(_die){
+        if(_die.isFinished()){
+            var val = _die.getUpsideValue()
+            if(val == 1){
+                return "fail"
+            }
+            else if(val % _die.values == 0){
+                return "crit"
+            }
         }
     }
 
