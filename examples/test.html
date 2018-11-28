@@ -11,13 +11,28 @@
 
     <script src="../lib/dice.js"></script>
     <style>
+        .initiative{
+            text-align: center;
+        }
+        input{
+            width: 30px;
+            max-width: 100%;
+        }
+        input.long{
+            width: 100px;
+        }
+        .dicetable{
+            position: fixed;
+            top: 0;
+            right: 0;
+        }
         .d4{background: #ff00ff;}
         .d6{background: #00ffff;}
         .d8{background: #00ff00;}
         .d10{background: #ffff00;}
         .d12{background: #ff8000;}
         .d20{background: #ff0000;}
-        th,td{
+        .dicetable th,.dicetable td{
             text-align: center;
             font-weight: bold;
             min-width: 10px;
@@ -31,19 +46,41 @@
             cursor: pointer;
             border: 3px inset;
         }
+        .roll{
+            box-sizing: border-box;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            margin: auto;
+            border: 1px solid transparent;
+        }
         .fail{
-            background: black;
-            color: #ff0000;
+            background: #ff0000;
+            border-color: black;
         }
         .crit{
-            background: black;
-            color: #00ff00
+            background: #00ff00;
+            border-color: black;
         }
     </style>
 </head>
 <body ng-app="myApp">
     <div ng-controller="MainController">
-        <table cellspacing=1>
+        <table class="initiative" border cellspacing=0>
+            <tr>
+                <th>Initiative</th>
+                <th>Name</th>
+                <th>HP</th>
+                <th>AC</th>
+            </tr>
+            <tr ng-repeat="c in combatants">
+                <td><input ng-model="c.initiative"></td>
+                <td><input ng-model="c.name" class="long"></td>
+                <td><input ng-model="c.HP"></td>
+                <td><input ng-model="c.AC"></td>
+            </tr>
+        </table>
+        <table cellspacing=1 class="dicetable">
             <tr>
                 <th rowspan=2>Dice</th>
                 <th colspan=3 class="d4">d4</th>
@@ -78,12 +115,12 @@
             </tr>
             <tr>
                 <td>Values</td>
-                <td colspan=3 class="d4"><div ng-repeat="die in dicestats.d4.list" class="{{result(die)}}">{{die.getUpsideValue()}}</div></td>
-                <td colspan=3 class="d6"><div ng-repeat="die in dicestats.d6.list" class="{{result(die)}}">{{die.getUpsideValue()}}</div></td>
-                <td colspan=3 class="d8"><div ng-repeat="die in dicestats.d8.list" class="{{result(die)}}">{{die.getUpsideValue()}}</div></td>
-                <td colspan=3 class="d10"><div ng-repeat="die in dicestats.d10.list" class="{{result(die)}}">{{die.getUpsideValue()}}</div></td>
-                <td colspan=3 class="d12"><div ng-repeat="die in dicestats.d12.list" class="{{result(die)}}">{{die.getUpsideValue()}}</div></td>
-                <td colspan=3 class="d20"><div ng-repeat="die in dicestats.d20.list" class="{{result(die)}}">{{die.getUpsideValue()}}</div></td>
+                <td colspan=3 class="d4"><div ng-repeat="die in dicestats.d4.list" class="{{result(die)}} roll">{{die.getUpsideValue()}}</div></td>
+                <td colspan=3 class="d6"><div ng-repeat="die in dicestats.d6.list" class="{{result(die)}} roll">{{die.getUpsideValue()}}</div></td>
+                <td colspan=3 class="d8"><div ng-repeat="die in dicestats.d8.list" class="{{result(die)}} roll">{{die.getUpsideValue()}}</div></td>
+                <td colspan=3 class="d10"><div ng-repeat="die in dicestats.d10.list" class="{{result(die)}} roll">{{die.getUpsideValue()}}</div></td>
+                <td colspan=3 class="d12"><div ng-repeat="die in dicestats.d12.list" class="{{result(die)}} roll">{{die.getUpsideValue()}}</div></td>
+                <td colspan=3 class="d20"><div ng-repeat="die in dicestats.d20.list" class="{{result(die)}} roll">{{die.getUpsideValue()}}</div></td>
                 <td>Total</td>
             </tr>
             <tr>
@@ -105,6 +142,18 @@ var container, scene, camera, renderer, controls, stats, world, dice = [];
 
 var app = angular.module("myApp", []);
 app.controller('MainController', ['$scope', function($scope) {
+    class Combatant {
+        constructor(){
+            this.initiative = 0;
+            this.name = "Name";
+        }
+    }
+    $scope.combatants = [new Combatant()];
+
+
+
+
+
     $scope.dicestats = {
         d4: {count: 0,total: 0, list: []},
         d6: {count: 0,total: 0, list: []},
@@ -119,7 +168,7 @@ app.controller('MainController', ['$scope', function($scope) {
         // SCENE
         scene = new THREE.Scene();
         // CAMERA
-        var SCREEN_WIDTH = window.innerWidth/2, SCREEN_HEIGHT = window.innerHeight;
+        var SCREEN_WIDTH = window.innerWidth*0.5, SCREEN_HEIGHT = window.innerHeight*0.5;
         var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.01, FAR = 20000;
         camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
         scene.add(camera);
